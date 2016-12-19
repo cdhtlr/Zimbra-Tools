@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#Copy of https://github.com/gfleury/trackmsg.py
+#copy of https://github.com/gfleury/trackmsg.py
 
 import argparse
 import re
@@ -15,7 +15,6 @@ import math
 def wrap_always(text, width):
     return '\n'.join([ text[width*i:width*(i+1)] \
 					  for i in range(int(math.ceil(1.*len(text)/width))) ])
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--id", help="Filter mail id")
@@ -44,9 +43,9 @@ relay_regex = re.compile (" relay=(.*?(?:\[.*\].?[0-9]*)?), ")
 
 status_regex = re.compile (" status=(.*?) (.*)$")
 
-attachment_regex = re.compile (".* filename=(.*)$")
+attachment_regex = re.compile ("filename=(.*) from ")
 
-header_regex = re.compile (".* header Subject: (.*) ")
+header_regex = re.compile (".* header Subject: (.*)from ")
 
 score_regex = re.compile (" Hits: ([0-9\-\.]+), ")
 
@@ -54,45 +53,27 @@ amavisstatus_regex = re.compile("\([0-9\-]+\)([a-zA-Z\- 0-9]+)")
 
 if args.id:
 	search_tokens.append(re.compile(".* " + args.id + "[:,] .*"))
-else:
-	search_tokens.append(id_regex)
 
 if args.server:
 	search_tokens.append(re.compile(".* client=.*" + args.server + ".*$"))
-else:
-	search_tokens.append(client_regex)
 
 if args.sender:
 	search_tokens.append(re.compile(".* from=<" + args.sender + ">.*"))
-	search_tokens.append(re.compile(".*<" + args.sender + "> ->.*"))
-else:
-	search_tokens.append(from_regex)
 
 if args.recipient:
 	search_tokens.append(re.compile(".* to=<" + args.recipient + ">.*"))
-	search_tokens.append(re.compile(".* -> .*<" + args.recipient + ">.*"))
-else:
-	search_tokens.append(to_regex)
 
 if args.relay_host:
 	search_tokens.append(re.compile(".* relay=.*" + args.relay_host + ",.*"))
-else:
-	search_tokens.append(relay_regex)
 
 if args.status:
 	search_tokens.append(re.compile(" status=.*" + args.status + ".*$"))
-else:
-	search_tokens.append(status_regex)
-	
+
 if args.attachment:
 	search_tokens.append(re.compile(".* filename=.*" + args.attachment + ".*$"))
-else:
-	search_tokens.append(attachment_regex)
-	
+
 if args.header:
 	search_tokens.append(re.compile(".* header Subject: " + args.header + " "))
-else:
-	search_tokens.append(header_regex)
 
 infile = args.logfile
 
@@ -111,10 +92,6 @@ for line in f:
 			if message_ids:
 				message_id = message_ids[0].lstrip()
 				message_id_regex = re.compile(".* " + message_id + "[:,] .*")
-				if not message_id_regex in search_tokens:
-					if args.server or (args.sender and not client_regex.match(line)) or ((args.recipient or args.relay_host) and (not from_regex.match(line)  and not client_regex.match(line))):
-						#print line
-						search_tokens.append(message_id_regex)
 			if message_id:
 				if not message_id in messages_dict:
 					messages_dict[message_id] = {}
@@ -127,41 +104,35 @@ for line in f:
 					messages_dict[message_id]['attachment'] = None
 					messages_dict[message_id]['header'] = None
 					messages_dict[message_id]['score'] = "N/A"
+					messages_dict[message_id]['status_extended'] = None
 				
 				id = id_regex.findall(line)
 				if id:
 					messages_dict[message_id]['id'] = cap(id[0], 12)
-					break
-				
+					
 				client = client_regex.findall(line)
 				if client:
 					messages_dict[message_id]['server'] = wrap_always(client[0], 14)
-					break
 				
 				sender = from_regex.findall(line)
 				if sender:
 					messages_dict[message_id]['sender'] = cap(sender[0], 28)
-					break
 				
 				to = to_regex.findall(line)
 				if to:
 					messages_dict[message_id]['recipient'] = cap(to[0], 28)
-					break
 
 				relay = relay_regex.findall(line)
 				if relay:
 					messages_dict[message_id]['relay'] = wrap_always(relay[0], 16)
-					break
-					
+
 				attachment = attachment_regex.findall(line)
 				if attachment:
 					messages_dict[message_id]['attachment'] = wrap_always(attachment[0], 16)
-					break
-					
+
 				header = header_regex.findall(line)
 				if header:
 					messages_dict[message_id]['header'] = wrap_always(header[0], 16)
-					break
 					
 				score = score_regex.findall(line)
 				if score:
@@ -172,14 +143,12 @@ for line in f:
 						amavisstatus = amavisstatus[0].replace(" ", "\n")
 					score = "%s\n%s" % (score[0], amavisstatus)
 					messages_dict[message_id]['score'] = wrap_always(score, 15).replace("\n\n", "\n")
-					break
 
 				status = status_regex.findall(line)
 				if status:
 					messages_dict[message_id]['status'] = status[0][0]
 					messages_dict[message_id]['status_extended'] = wrap_always(status[0][1], 24)
-					table.add_row ([messages_dict[message_id]['id'], messages_dict[message_id]['status'], messages_dict[message_id]['sender'], messages_dict[message_id]['recipient'], messages_dict[message_id]['header'], messages_dict[message_id]['attachment'], messages_dict[message_id]['score'], messages_dict[message_id]['relay'], messages_dict[message_id]['server'], messages_dict[message_id]['status_extended']])
-					break
+				table.add_row ([messages_dict[message_id]['id'], messages_dict[message_id]['status'], messages_dict[message_id]['sender'], messages_dict[message_id]['recipient'], messages_dict[message_id]['header'], messages_dict[message_id]['attachment'], messages_dict[message_id]['score'], messages_dict[message_id]['relay'], messages_dict[message_id]['server'], messages_dict[message_id]['status_extended']])
 
 			break
 
