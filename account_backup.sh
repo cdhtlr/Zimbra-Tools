@@ -26,7 +26,7 @@ do
 	echo "$i -- data exported"
 	/opt/zimbra/bin/zmprov ga "$i" zimbraMailSieveScript > "$USERFILTER"/"$i".txt
 	sed -i -e "1d" "$USERFILTER"/"$i".txt
-	sed 's/zimbraMailSieveScript: //g' "$USERFILTER"/"$i".txt > "$USERFILTER"/"$i".txt
+	sed -i -e "s/zimbraMailSieveScript: //g" "$USERFILTER"/"$i".txt
 	echo "$i -- filter exported"
 done 
 echo "======> 2/3. Selesai : Export daftar email beserta mailbox dan filter rule <======"
