@@ -45,7 +45,7 @@ do
 	echo "$i -- user imported"
 	/opt/zimbra/bin/zmmailbox -z -m "$i" postRestURL "//?fmt=zip&resolve=reset" "$USERDATA"/"$i".zip
 	echo "$i -- data restored"
-	/opt/zimbra/bin/zmprov ma "$i" zimbraMailSieveScript "'""$(cat $USERFILTER/$i.txt)""'"
+	/opt/zimbra/bin/zmprov ma "$i" zimbraMailSieveScript "'"$(cat $USERFILTER/$i.txt)"'"
 	echo "$i -- filter restored"
 done
 echo "======> 2/3. Selesai : Import daftar email non-admin beserta mailboxnya <======"
@@ -56,7 +56,7 @@ for i in $(cat $DISTRIBUTIONLIST)
 do
 	/opt/zimbra/bin/zmprov cdl "$i"
 	echo "$i -- distributionlist imported"
-	for j in "grep -v '#' $DISTRIBUTIONLIST_MEMBERS/$i.txt |grep '@'"
+	for j in $(grep -v "#" $DISTRIBUTIONLIST_MEMBERS/$i.txt |grep "@")
 	do
 		/opt/zimbra/bin/zmprov adlm "$i" "$j"
 		echo "$j member has been added to list $i"
