@@ -19,16 +19,16 @@ cat "$USERS"
 mkdir "$USERDATA"
 mkdir "$USERFILTER"
 for i in $(cat $USERS)
-    do
-        /opt/zimbra/bin/zmprov -l ga "$i" > "$USERDATA"/"$i".txt
-        echo "$i -- email exported"
-        /opt/zimbra/bin/zmmailbox -z -m "$i" getRestURL '//?fmt=zip' > "$USERDATA"/"$i".zip
-        echo "$i -- data exported"
-        /opt/zimbra/bin/zmprov ga "$i" zimbraMailSieveScript > "$USERFILTER"/"$i".txt
-        sed -i -e "1d" "$USERFILTER"/"$i".txt
-        sed 's/zimbraMailSieveScript: //g' "$USERFILTER"/"$i".txt > "$USERFILTER"/"$i".txt
-        echo "$i -- filter exported"
-    done
+do
+    /opt/zimbra/bin/zmprov -l ga "$i" > "$USERDATA"/"$i".txt
+    echo "$i -- email exported"
+    /opt/zimbra/bin/zmmailbox -z -m "$i" getRestURL '//?fmt=zip' > "$USERDATA"/"$i".zip
+    echo "$i -- data exported"
+    /opt/zimbra/bin/zmprov ga "$i" zimbraMailSieveScript > "$USERFILTER"/"$i".txt
+    sed -i -e "1d" "$USERFILTER"/"$i".txt
+    sed 's/zimbraMailSieveScript: //g' "$USERFILTER"/"$i".txt > "$USERFILTER"/"$i".txt
+    echo "$i -- filter exported"
+done 
 echo "======> 2/3. Selesai : Export daftar email beserta mailbox dan filter rule <======"
 
 ######################## Export daftar distribution list beserta membernya ########################
@@ -37,10 +37,10 @@ echo "======> 3/3. Mulai : Export daftar distribution list beserta membernya <==
 cat "$DISTRIBUTIONLIST"
 mkdir "$DISTRIBUTIONLIST_MEMBERS"
 for i in $(cat $DISTRIBUTIONLIST)
-    do
-        /opt/zimbra/bin/zmprov gdlm "$i" > "$DISTRIBUTIONLIST_MEMBERS"/"$i".txt
-        echo "$i -- distributionlist_members exported"
-    done
+do
+    /opt/zimbra/bin/zmprov gdlm "$i" > "$DISTRIBUTIONLIST_MEMBERS"/"$i".txt
+    echo "$i -- distributionlist_members exported"
+done
 echo "======> 3/3. Selesai : Export daftar distribution list beserta membernya <======"
 
 ############################################ Selesai ##############################################
