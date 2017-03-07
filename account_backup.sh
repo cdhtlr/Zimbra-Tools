@@ -66,7 +66,6 @@ do
 		echo "$i -- data exported"
 	fi
 done
-find "$USERDATA"/ -type f -size -2c | xargs -n1 rm -v
 find "$USERALIAS"/ -type f -empty | xargs -n1 rm -v
 find "$USERFILTER"/ -type f -empty | xargs -n1 rm -v
 find "$USERFORWARD"/ -type f -empty | xargs -n1 rm -v
