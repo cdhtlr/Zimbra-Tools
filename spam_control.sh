@@ -1,5 +1,8 @@
 #!/bin/bash
 
+lower_trigger="10"
+higher_trigger="20"
+suspected_spam_trigger="100"
 from="sendermail@gmail.com"
 target="targetmail@gmail.com"
 smtp="smtp.gmail.com:587"
@@ -15,14 +18,16 @@ active_count=$(/opt/zimbra/libexec/zmqstat | grep "active" | sed -n -e "=")
 #Isi dari statistik zimbra
 all_count=$(/opt/zimbra/libexec/zmqstat)
 
-#Jika jumlah e-mail yang tertunda atau aktif di dalam queue > 10 e-mail maka ...
-if [[ $deferred_count > 10 || $active_count > 10 ]]; then
+#Jika jumlah e-mail yang tertunda atau aktif di dalam queue > lower_trigger e-mail maka ...
+if [ $deferred_count -gt $lower_trigger ] || [ $active_count -gt $lower_trigger ]
+then
 
 	#Kirimkan e-mail berisi statistik zimbra (harus menginstall aplikasi sendemail, bukan sendmail)
 	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls='"$tls"' -xu "$from" -xp "$pass" -u "$subject" -m "$all_count"
 
-	#Jika jumlah e-mail yang tertunda atau aktif di dalam queue > 20 e-mail maka ...
-	if [[ $deferred_count > 20 || $active_count > 20 ]]; then
+	#Jika jumlah e-mail yang tertunda atau aktif di dalam queue > higher_trigger e-mail maka ...
+	if [ $deferred_count -gt $higher_trigger ] || [ $active_count -gt $higher_trigger ]
+	then
 		
 		#Pendataan alamat e-mail yang dianggap nyepam
 		suspected_email=$(/opt/zimbra/common/sbin/postqueue -p | grep "$domain" | cut -d " " -f10 | grep "$domain" | sort -u)
@@ -34,8 +39,9 @@ if [[ $deferred_count > 10 || $active_count > 10 ]]; then
 			#Dihitung jumlah e-mailnya
 			suspected_spam_count=$(/opt/zimbra/common/sbin/postqueue -p | grep "$i" | wc -l)
 			
-			#Jika jumlah email dari alamat yang dianggap nyepam > 100 maka ...
-			if [[ $suspected_spam_count > 100 ]]; then
+			#Jika jumlah email dari alamat yang dianggap nyepam > suspected_spam_trigger maka ...
+			if [ $deferred_count -gt $suspected_spam_trigger ]
+			then
 			
 				#Buat password baru
 				new_password=$(od -vAn -N4 -tu4 < /dev/urandom)
