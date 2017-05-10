@@ -33,14 +33,14 @@ then
 		suspected_email=$(/opt/zimbra/common/sbin/postqueue -p | grep "$domain" | cut -d " " -f10 | grep "$domain" | sort -u)
 		
 		#Untuk setiap e-mail yang dianggap nyepam
-		for i in $(suspected_email)
+		for i in $suspected_email
 		do
 			
 			#Dihitung jumlah e-mailnya
 			suspected_spam_count=$(/opt/zimbra/common/sbin/postqueue -p | grep "$i" | wc -l)
 			
 			#Jika jumlah email dari alamat yang dianggap nyepam > suspected_spam_trigger maka ...
-			if [ $deferred_count -gt $suspected_spam_trigger ]
+			if [ $suspected_spam_count -gt $suspected_spam_trigger ]
 			then
 			
 				#Buat password baru
