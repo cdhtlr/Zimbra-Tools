@@ -16,7 +16,7 @@ if [ $max_disk_usage -gt $trigger ]
 then
 	
 	#Kirimkan e-mail berisi status penggunaan harddisk (harus menginstall aplikasi sendemail, bukan sendmail)
-	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls='"$tls"' -xu "$from" -xp "$pass" -u "Disk usage reaching $trigger percent" -m "$all_disk_usage"
+	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls="$tls" -xu "$from" -xp "$pass" -u "Disk usage reaching $trigger percent" -m "$all_disk_usage"
 
 fi
 
@@ -34,7 +34,7 @@ do
 	then
 		
 		#Kirimkan e-mail berisi status quota e-mail (harus menginstall aplikasi sendemail, bukan sendmail)
-		sendEmail -f "$from" -t "$target" -s "$smtp" -o tls='"$tls"' -xu "$from" -xp "$pass" -u "User ${ACCOUNT} quota reaching $trigger percent" -m "Current usage is $quota_usage of $quota_total"
+		sendEmail -f "$from" -t "$target" -s "$smtp" -o tls="$tls" -xu "$from" -xp "$pass" -u "User ${ACCOUNT} quota reaching $trigger percent" -m "Current usage is $quota_usage of $quota_total"
 		
 		#menetapkan quota baru sebanyak 2 x quota awal
 		new_quota=$quota_total*2
