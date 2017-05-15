@@ -23,7 +23,7 @@ if [ $deferred_count -gt $lower_trigger ] || [ $active_count -gt $lower_trigger 
 then
 
 	#Kirimkan e-mail berisi statistik zimbra (harus menginstall aplikasi sendemail, bukan sendmail)
-	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls='"$tls"' -xu "$from" -xp "$pass" -u "$subject" -m "$all_count"
+	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls="$tls" -xu "$from" -xp "$pass" -u "$subject" -m "$all_count"
 
 	#Jika jumlah e-mail yang tertunda atau aktif di dalam queue > higher_trigger e-mail maka ...
 	if [ $deferred_count -gt $higher_trigger ] || [ $active_count -gt $higher_trigger ]
