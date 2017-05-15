@@ -19,7 +19,7 @@ if [ $zimbra_service_stopped -gt 0 ] || [ $zimbra_service_not_running -gt 0 ]
 then
 
 	#Kirimkan e-mail berisi status service zimbra (harus menginstall aplikasi sendemail, bukan sendmail)
-	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls='"$tls"' -xu "$from" -xp "$pass" -u "$subject" -m "$zimbra_service_status"
+	sendEmail -f "$from" -t "$target" -s "$smtp" -o tls="$tls" -xu "$from" -xp "$pass" -u "$subject" -m "$zimbra_service_status"
 	
 	#Stop service zimbra
 	su - zimbra -c 'zmcontrol stop'
