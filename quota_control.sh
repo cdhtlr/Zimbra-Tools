@@ -47,11 +47,8 @@ do
 			
 		#Menghitung prosentase trigger dan menentukan besaran kuota untuk trigger (mengabaikan koma)
 		percent_trigger=$((100 / trigger))
-		quota_trigger=$(echo - | awk '{print $quota_total / $percent_trigger}' | cut -d "." -f1)
-		
-		echo "${ACCOUNT}"
-		echo "$quota_numeral"
-		echo "$quota_trigger"
+		quota_trigger=$((quota_total / percent_trigger))
+		quota_trigger=$(echo "$quota_trigger" | cut -d "." -f1)
 		
 		#Jika ada e-mail account yang mencapai quota trigger maka ...
 		if [ "$quota_numeral" -gt "$quota_trigger" ]
