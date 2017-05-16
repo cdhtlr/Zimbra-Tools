@@ -31,17 +31,17 @@ do
 	if [ $quota_total -ne 0 ]
 	then
 
-		#Mengecek besaran quota dan satuan asalnya
-		quota_numeral=$(/opt/zimbra/bin/zmmailbox -z -m ${ACCOUNT} gms | cut -d " " -f1)
+		#Mengecek besaran quota (mengabaikan koma) dan satuan asalnya
+		quota_numeral=$(/opt/zimbra/bin/zmmailbox -z -m ${ACCOUNT} gms | cut -d " " -f1 | cut -d "." -f1)
 		quota_unit=$(/opt/zimbra/bin/zmmailbox -z -m ${ACCOUNT} gms | cut -d " " -f2)
 		
 		#Menghitung besaran quota yang telah digunakan oleh masing-masing e-mail account (dikonversikan ke bytes dari satuan asalnya)
 		case "$quota_unit" in
 		"MB")
-			quota_numeral=$(echo - | awk '{print $quota_numeral * 1024 * 1024}')
+			quota_numeral=$((quota_numeral * 1024 * 1024))
 			;;
 		"K")
-			quota_numeral=$(echo - | awk '{print $quota_numeral * 1024}')
+			quota_numeral=$((quota_numeral * 1024))
 			;;
 		esac
 			
