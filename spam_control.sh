@@ -15,8 +15,8 @@ domain="@domain.com"
 all_count=$(/opt/zimbra/libexec/zmqstat)
 
 #Menghitung e-mail yang tertunda dan aktif di dalam queue
-deferred_count=$(/opt/zimbra/libexec/zmqstat | grep "deferred" | sed -n -e "=")
-active_count=$(/opt/zimbra/libexec/zmqstat | grep "active" | sed -n -e "=")
+deferred_count=$(/opt/zimbra/libexec/zmqstat | grep "deferred" | sed 's/deferred=//g')
+active_count=$(/opt/zimbra/libexec/zmqstat | grep "active" | sed 's/active=//g')
 
 #Jika jumlah e-mail yang tertunda atau aktif di dalam queue > lower_trigger e-mail maka ...
 if [ $deferred_count -gt $lower_trigger ] || [ $active_count -gt $lower_trigger ]
