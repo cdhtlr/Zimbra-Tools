@@ -50,7 +50,7 @@ then
 				/opt/zimbra/bin/zmprov sp "$i" "$new_password"
 				
 				#Tahan semua e-email dari alamat e-mail yang terindikasi sebagai spammer
-				/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | postsuper -h -
+				/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
 			fi
 		done
 	fi
