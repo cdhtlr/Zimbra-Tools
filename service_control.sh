@@ -28,7 +28,8 @@ then
 		pid=$(lsof -i:$port -t); kill -TERM $pid || kill -KILL $pid
 	done
 	
-	#Restart service zimbra
+	#Restart service zimbra (2 kali untuk memastikan bahwa service telah berjalan)
+	su - zimbra -c 'zmcontrol restart'
 	su - zimbra -c 'zmcontrol restart'
 
 fi
