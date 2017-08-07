@@ -13,13 +13,22 @@ externaldomain=("@externaldomain.com" "@example.com")
 internaldomain="@internaldomain.com"
 
 # ============================================================= UNTUK EMAIL YANG ASALNYA DARI LUAR ==================================================
-#Untuk setiap e-mail di dalam array externaldomain
+#Pendataan alamat e-mail yang dianggap nyepam
+
 for i in ${externaldomain[*]}
 do
 	
-	#Tahan semua e-email dari alamat e-mail yang ada di dalam array
-	/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+	suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$i" | cut -d " " -f10 | grep "$i" | sort -u)
 
+	#Untuk setiap e-mail yang dianggap nyepam (dari luar)
+	for j in $suspected_email_from_external_domain
+	do
+		
+		#Tahan semua e-email dari alamat e-mail yang ada di dalam array
+		/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$j" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+
+	done
+	
 done
 
 # ============================================================= UNTUK EMAIL YANG ASALNYA DARI DALAM ==================================================
