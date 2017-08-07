@@ -9,8 +9,20 @@ smtp="smtp.gmail.com:587"
 tls="yes"
 pass="PasswordOfsendermail@gmail.com"
 subject="Your subject ex:You have got enemies"
-domain="@domain.com"
+externaldomain=("@externaldomain.com" "@example.com")
+internaldomain="@internaldomain.com"
 
+# ============================================================= UNTUK EMAIL YANG ASALNYA DARI LUAR ==================================================
+#Untuk setiap e-mail di dalam array externaldomain
+for i in ${externaldomain[*]}
+do
+	
+	#Tahan semua e-email dari alamat e-mail yang ada di dalam array
+	/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+
+done
+
+# ============================================================= UNTUK EMAIL YANG ASALNYA DARI DALAM ==================================================
 #Isi dari statistik zimbra
 all_count=$(/opt/zimbra/libexec/zmqstat)
 
@@ -30,10 +42,10 @@ then
 	then
 		
 		#Pendataan alamat e-mail yang dianggap nyepam
-		suspected_email=$(/opt/zimbra/common/sbin/postqueue -p | grep "$domain" | cut -d " " -f10 | grep "$domain" | sort -u)
+		suspected_email_from_internal_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$internaldomain" | cut -d " " -f10 | grep "$internaldomain" | sort -u)
 		
 		#Untuk setiap e-mail yang dianggap nyepam
-		for i in $suspected_email
+		for i in $suspected_email_from_internal_domain
 		do
 			
 			#Dihitung jumlah e-mailnya
@@ -52,6 +64,9 @@ then
 				#Tahan semua e-email dari alamat e-mail yang terindikasi sebagai spammer
 				/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
 			fi
+
 		done
+
 	fi
+
 fi
