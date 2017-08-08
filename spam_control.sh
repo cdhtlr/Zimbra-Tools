@@ -9,23 +9,69 @@ smtp="smtp.gmail.com:587"
 tls="yes"
 pass="PasswordOfsendermail@gmail.com"
 subject="Your subject ex:You have got enemies"
-externaldomain=("@externaldomain.com" "@example.com")
+externaldomains=("@externaldomain.com" "@example.com")
 internaldomain="@internaldomain.com"
 
 # ============================================================= UNTUK EMAIL YANG ASALNYA DARI LUAR ==================================================
-#Pendataan alamat e-mail yang dianggap nyepam
+#Pendataan alamat e-mail yang dianggap nyepam (dari luar)
 
-for i in ${externaldomain[*]}
+for externaldomain in ${externaldomains[*]}
 do
 	
-	suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$i" | cut -d " " -f10 | grep "$i" | sort -u)
+	suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f1 | grep "$externaldomain" | sort -u)
 
+	if (suspected_email_from_external_domain != ""){
+		suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f2 | grep "$externaldomain" | sort -u)
+		if (suspected_email_from_external_domain != ""){
+			suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f3 | grep "$externaldomain" | sort -u)
+			if (suspected_email_from_external_domain != ""){
+				suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f4 | grep "$externaldomain" | sort -u)
+				if (suspected_email_from_external_domain != ""){
+					suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f5 | grep "$externaldomain" | sort -u)
+					if (suspected_email_from_external_domain != ""){
+						suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f6 | grep "$externaldomain" | sort -u)
+						if (suspected_email_from_external_domain != ""){
+							suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f7 | grep "$externaldomain" | sort -u)
+							if (suspected_email_from_external_domain != ""){
+								suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f8 | grep "$externaldomain" | sort -u)
+								if (suspected_email_from_external_domain != ""){
+									suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f9 | grep "$externaldomain" | sort -u)
+									if (suspected_email_from_external_domain != ""){
+										suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f10 | grep "$externaldomain" | sort -u)
+										if (suspected_email_from_external_domain != ""){
+											suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f11 | grep "$externaldomain" | sort -u)
+											if (suspected_email_from_external_domain != ""){
+												suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f12 | grep "$externaldomain" | sort -u)
+												if (suspected_email_from_external_domain != ""){
+													suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f13 | grep "$externaldomain" | sort -u)
+													if (suspected_email_from_external_domain != ""){
+														suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f14 | grep "$externaldomain" | sort -u)
+														if (suspected_email_from_external_domain != ""){
+															suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f15 | grep "$externaldomain" | sort -u)
+															if (suspected_email_from_external_domain != ""){
+																suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f16 | grep "$externaldomain" | sort -u)
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	#Untuk setiap e-mail yang dianggap nyepam (dari luar)
-	for j in $suspected_email_from_external_domain
+	for i in $suspected_email_from_external_domain
 	do
 		
 		#Tahan semua e-email dari alamat e-mail yang ada di dalam array
-		/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$j" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+		/opt/zimbra/common/sbin/postqueue -p | awk 'BEGIN { RS = "" } { if ($7 == "$i" ) print $1 }' | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
 
 	done
 	
@@ -50,10 +96,56 @@ then
 	if [ $deferred_count -gt $higher_trigger ] || [ $active_count -gt $higher_trigger ]
 	then
 		
-		#Pendataan alamat e-mail yang dianggap nyepam
-		suspected_email_from_internal_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$internaldomain" | cut -d " " -f10 | grep "$internaldomain" | sort -u)
+		#Pendataan alamat e-mail yang dianggap nyepam (dari dalam)
+		suspected_email_from_internal_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$internaldomain" | cut -d " " -f1 | grep "$internaldomain" | sort -u)
+
+		if (suspected_email_from_external_domain != ""){
+			suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f2 | grep "$externaldomain" | sort -u)
+			if (suspected_email_from_external_domain != ""){
+				suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f3 | grep "$externaldomain" | sort -u)
+				if (suspected_email_from_external_domain != ""){
+					suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f4 | grep "$externaldomain" | sort -u)
+					if (suspected_email_from_external_domain != ""){
+						suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f5 | grep "$externaldomain" | sort -u)
+						if (suspected_email_from_external_domain != ""){
+							suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f6 | grep "$externaldomain" | sort -u)
+							if (suspected_email_from_external_domain != ""){
+								suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f7 | grep "$externaldomain" | sort -u)
+								if (suspected_email_from_external_domain != ""){
+									suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f8 | grep "$externaldomain" | sort -u)
+									if (suspected_email_from_external_domain != ""){
+										suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f9 | grep "$externaldomain" | sort -u)
+										if (suspected_email_from_external_domain != ""){
+											suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f10 | grep "$externaldomain" | sort -u)
+											if (suspected_email_from_external_domain != ""){
+												suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f11 | grep "$externaldomain" | sort -u)
+												if (suspected_email_from_external_domain != ""){
+													suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f12 | grep "$externaldomain" | sort -u)
+													if (suspected_email_from_external_domain != ""){
+														suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f13 | grep "$externaldomain" | sort -u)
+														if (suspected_email_from_external_domain != ""){
+															suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f14 | grep "$externaldomain" | sort -u)
+															if (suspected_email_from_external_domain != ""){
+																suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f15 | grep "$externaldomain" | sort -u)
+																if (suspected_email_from_external_domain != ""){
+																	suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f16 | grep "$externaldomain" | sort -u)
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		
-		#Untuk setiap e-mail yang dianggap nyepam
+		#Untuk setiap e-mail yang dianggap nyepam (dari dalam)
 		for i in $suspected_email_from_internal_domain
 		do
 			
