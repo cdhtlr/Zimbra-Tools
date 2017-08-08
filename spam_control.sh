@@ -9,37 +9,11 @@ smtp="smtp.gmail.com:587"
 tls="yes"
 pass="PasswordOfsendermail@gmail.com"
 subject="Your subject ex:You have got enemies"
-externaldomains=("@externaldomain.com" "@example.com")
 internaldomain="@internaldomain.com"
-
-# ============================================================= UNTUK EMAIL YANG ASALNYA DARI LUAR ==================================================
-#Pendataan alamat e-mail yang dianggap nyepam (dari luar)
-
-for externaldomain in ${externaldomains[*]}
-do
-	suspected_email_from_external_domain=""
-	for i in {1..16}
-	do
-	
-		if [ ! -z "$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f$i | grep "$externaldomain" | sort -u)" ]
-		then
-			suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f$i | grep "$externaldomain" | sort -u)
-		fi
-	
-	done
-	
-	#Untuk setiap e-mail yang dianggap nyepam (dari luar)
-	for i in $suspected_email_from_external_domain
-	do
-	
-		#Tahan semua e-email dari alamat e-mail yang ada di dalam array
-		/opt/zimbra/common/sbin/postqueue -p | grep "$i" | cut -d " " -f1 | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
-
-	done
-	
-done
+externaldomains=("@externaldomain.com" "@example.com")
 
 # ============================================================= UNTUK EMAIL YANG ASALNYA DARI DALAM ==================================================
+
 #Isi dari statistik zimbra
 all_count=$(/opt/zimbra/libexec/zmqstat)
 
@@ -65,34 +39,67 @@ then
 		
 			if [ ! -z "$(/opt/zimbra/common/sbin/postqueue -p | grep "$internaldomain" | cut -d " " -f$i | grep "$internaldomain" | sort -u)" ]
 			then
+
 				suspected_email_from_internal_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$internaldomain" | cut -d " " -f$i | grep "$internaldomain" | sort -u)
+		
+				#Untuk setiap e-mail yang dianggap nyepam (dari dalam)
+				for j in $suspected_email_from_internal_domain
+				do
+					
+					#Dihitung jumlah e-mailnya
+					suspected_spam_count=$(/opt/zimbra/common/sbin/postqueue -p | grep "$j" | wc -l)
+					
+					#Jika jumlah email dari alamat yang dianggap nyepam > suspected_spam_trigger maka ...
+					if [ $suspected_spam_count -gt $suspected_spam_trigger ]
+					then
+					
+						#Buat password baru
+						new_password=$(od -vAn -N4 -tu4 < /dev/urandom)
+						
+						#Ganti password dengan password yang baru
+						/opt/zimbra/bin/zmprov sp "$j" "$new_password"
+						
+						#Tahan semua e-email dari alamat e-mail yang ada di dalam array
+						/opt/zimbra/common/sbin/postqueue -p | grep "$j" | cut -d " " -f1 | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+						
+					fi
+
+				done
 			fi
 		
-		done
-		#Untuk setiap e-mail yang dianggap nyepam (dari dalam)
-		for i in $suspected_email_from_internal_domain
-		do
-			
-			#Dihitung jumlah e-mailnya
-			suspected_spam_count=$(/opt/zimbra/common/sbin/postqueue -p | grep "$i" | wc -l)
-			
-			#Jika jumlah email dari alamat yang dianggap nyepam > suspected_spam_trigger maka ...
-			if [ $suspected_spam_count -gt $suspected_spam_trigger ]
-			then
-			
-				#Buat password baru
-				new_password=$(od -vAn -N4 -tu4 < /dev/urandom)
-				
-				#Ganti password dengan password yang baru
-				/opt/zimbra/bin/zmprov sp "$i" "$new_password"
-				
-				#Tahan semua e-email dari alamat e-mail yang ada di dalam array
-				/opt/zimbra/common/sbin/postqueue -p | grep "$i" | cut -d " " -f1 | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
-				
-			fi
-
 		done
 
 	fi
 
 fi
+
+# ============================================================= UNTUK EMAIL YANG ASALNYA DARI LUAR ==================================================
+
+#Pendataan alamat e-mail yang dianggap nyepam (dari luar)
+for externaldomain in ${externaldomains[*]}
+do
+
+	suspected_email_from_external_domain=""
+
+	for i in {1..16}
+	do
+	
+		if [ ! -z "$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f$i | grep "$externaldomain" | sort -u)" ]
+		then
+
+			suspected_email_from_external_domain=$(/opt/zimbra/common/sbin/postqueue -p | grep "$externaldomain" | cut -d " " -f$i | grep "$externaldomain" | sort -u)
+	
+			#Untuk setiap e-mail yang dianggap nyepam (dari luar)
+			for j in $suspected_email_from_external_domain
+			do
+			
+				#Tahan semua e-email dari alamat e-mail yang ada di dalam array
+				/opt/zimbra/common/sbin/postqueue -p | grep "$j" | cut -d " " -f1 | tr -d '!*' | /opt/zimbra/common/sbin/postsuper -h -
+
+			done
+			
+		fi
+	
+	done
+	
+done
