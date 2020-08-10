@@ -416,6 +416,8 @@ sub doit {
                 elsif ( $msg =~ /^warning: header Subject: (.*) from / ) {
                     $obj->{subject} = $1;
 		    
+		    # 待處理有空格分割的每段 utf-8 base64 decode 處理
+		    
 		    # 2020/08/10 Jaosn Cheng Add 
                     if ($obj->{subject} =~ /=?UTF-8?B?/) {
                         $obj->{subject} = substr $obj->{subject}, 10, 36;
