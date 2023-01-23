@@ -12,6 +12,11 @@
 # Software distributed under the License is distributed on an "AS IS"
 # basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
+#
+# 2020/08/10 Update by Jason Cheng (jason@jason.tools) 
+# Support Traditinal Chinese Subject
+#
+
 
 =head1 NAME
 
@@ -127,6 +132,7 @@ use Getopt::Long qw(GetOptions);
 use IO::File ();
 use Pod::Usage qw(pod2usage);
 use Time::localtime qw(localtime);
+use MIME::Base64;
 
 my $DEBUG   = 0;                       # GLOBAL set by process_options()
 my $LOGFILE = "/var/log/zimbra.log";
@@ -406,11 +412,21 @@ sub doit {
                     $ref->{arriveTime} ||= $date;
                     $msgs{ $ref->{messageId} }{$qid} = $ref;
                 }
-				#TAMBAHAN DARI SIDIK UNTUK MENCARI SUBJECT
+		#TAMBAHAN DARI SIDIK UNTUK MENCARI SUBJECT
                 elsif ( $msg =~ /^warning: header Subject: (.*) from / ) {
                     $obj->{subject} = $1;
+		    
+		    # 待處理有空格分割的每段 utf-8 base64 decode 處理
+		    
+		    # 2020/08/10 Jaosn Cheng Add 
+                    if ($obj->{subject} =~ /=?UTF-8?B?/) {
+                        $obj->{subject} = substr $obj->{subject}, 10, 36;
+                        $obj->{subject} = decode_base64($obj->{subject});
+                    }
+
+		    
                 }
-				#############################################################
+		#############################################################
                 elsif ( $msg =~ /^message-id=<([^>]+)>/ ) {
                     $obj->{messageId}  = $1;
                     $obj->{arriveTime} = $date;
